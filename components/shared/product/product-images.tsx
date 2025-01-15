@@ -22,7 +22,7 @@ export default function ProductImages({ images }: { images: string[] }) {
           <div 
             key={image} 
             onClick={() => setCurrent(index)} 
-            className={cn(`border rounded-sm border-2 mr-2 cursor-pointer hover:border-orange-600`, current === index && 'border-orange-500')}
+            className={cn(`rounded-sm border-2 mr-2 cursor-pointer hover:border-orange-600`, current === index && 'border-orange-500')}
           >
             <Image src={image} alt={`image-${index}`} width={100} height={100} priority />
           </div>
