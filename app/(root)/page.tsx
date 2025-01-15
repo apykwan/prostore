@@ -5,7 +5,6 @@ import { LATEST_PRODUCTS_LIMIT } from '@/lib/constants';
 
 export default async function Homepage() {
   const latestProducts = await getLatestProducts();
-  console.log(latestProducts);
   return (
     <>
       <ProductList 
