@@ -11,6 +11,7 @@ datasource db {
 model Product {
   id          String   @id @default(uuid()) @db.Uuid
   slug        String   @unique
+  name        String
   category    String
   images      String[]
   brand       String
