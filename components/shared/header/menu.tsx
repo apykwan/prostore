@@ -17,7 +17,7 @@ export default function Menu() {
           </Button>
 
           <Button asChild>
-            <Link href="/cart">
+            <Link href="/sign-in">
               <UserIcon /> Sign In
             </Link>
           </Button>
@@ -37,7 +37,7 @@ export default function Menu() {
               </Link>
             </Button>
             <Button asChild>
-              <Link href="/cart">
+              <Link href="/sign-in">
                 <UserIcon /> Sign In
               </Link>
             </Button>
