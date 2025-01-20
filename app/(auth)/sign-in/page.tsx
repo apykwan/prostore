@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Sign In'
 }
 
-export default function SignInPage() {
+export default async function SignInPage() {
   return (
     <div className="w-full max-w-md mx-auto">
       <Card>

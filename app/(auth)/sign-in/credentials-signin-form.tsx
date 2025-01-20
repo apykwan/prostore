@@ -1,19 +1,38 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
+import { signInWithCredentials } from '@/lib/actions/user.actions';
 import { signInDefaultValues } from '@/lib/constants';
 
+function SignInButton({ pending }: { pending: boolean }) {
+  return (
+    <Button className="w-full" disabled={pending} variant="default">
+      { pending ? 'Signing In' : 'Sign In' }
+    </Button>
+  );
+}
+
 export default function CredentialsSigninForm() {
-  const [data, action] = useActionState(signInDefaultValues, {
+  const [data, action] = useActionState(signInWithCredentials, {
     success: false,
     message: ''
   });
+  const router = useRouter();
+  const { pending } = useFormStatus();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  
+  useEffect(() => {
+    if (data.success) router.push(callbackUrl || '/');
+  }, [data.success, callbackUrl, router]); 
   return (
     <form action={action}>
       <div className="space-y-6">
@@ -40,9 +59,12 @@ export default function CredentialsSigninForm() {
             defaultValue={signInDefaultValues.email}
           />
         </div>
-        <div>
-          <Button className="w-full" variant="default">Sign In</Button>
-        </div>
+
+        <SignInButton pending={pending} />
+
+        { data && !data.success && (
+          <div className="text-center text-destructive">{data.message}</div>
+        )}
         
         <div className="text-sm text-center text-muted-foreground">
           Don&apos;t have an account ? {' '} 
