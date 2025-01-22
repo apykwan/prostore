@@ -6,6 +6,24 @@ import { type NextAuthConfig } from 'next-auth';
 
 import { prisma } from '@/db/prisma';
 
+declare module 'next-auth' {
+  interface User {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    role?: string; // Add the role property
+  }
+
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      role?: string; // Add the role property
+    };
+  }
+}
+
 export const config: NextAuthConfig = {
   pages: {
     signIn: '/sign-in',
@@ -48,13 +66,40 @@ export const config: NextAuthConfig = {
     })
   ],
   callbacks: {
-    async session({ session, user, trigger, token }) {
+    // eslint-disable-next-line
+    async session({ session, user, trigger, token }: any) {
+      console.log('token', token);
       // Set the user ID rom the token
-      session.user.id = token.sub as string;
+      session.user.id = token.sub;
+      session.user.role = token.role;
+      session.user.name = token.name;
 
       // If there is an update, set the user name
-      if (trigger === 'update') session.user.name = user.name;
+      if (trigger === 'update') {
+        session.user.name = user.name;
+      }
+
       return session;
+    },
+    // eslint-disable-next-line
+    async jwt({ token, user, trigger, session }) {
+      // Assign user fields to token
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+
+        // If user has no name then use the eamil
+        if (user.name === 'NO_NAME') {
+          token.name = user.email!.split('@')[0];
+
+          // update database to reflect the token
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { name: token.name }
+          })
+        }
+      }
+      return token;
     }
   }
 };
