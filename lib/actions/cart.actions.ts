@@ -14,7 +14,7 @@ import { CartItem } from '@/types';
 function calcPrice (items: CartItem[]) {
   const itemsPrice = round2(
     items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
-  );
+  ) || 0;
   // minium purchase for free shipping $10
   const shippingPrice = round2(itemsPrice > 100 ? 0 : 10);
   const taxPrice = round2(0.15 * itemsPrice);
