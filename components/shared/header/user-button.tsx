@@ -27,8 +27,6 @@ export default async function UserButton() {
   const session = await auth();
   if (!session) return SigninButton();
 
-  console.log(session);
-
   const firstInitial = session.user?.name?.charAt(0).toUpperCase() ?? 'U';
   return (
     <div className="flex gap-2 items-center">
