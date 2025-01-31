@@ -10,11 +10,23 @@ import { formatError, convertToPlainObject, round2 } from '../utils';
 import { cartItemSchema, insertCartSchema } from '../validators';
 import { CartItem } from '@/types';
 
+interface PriceDetails {
+  itemsPrice: string;
+  shippingPrice: string;
+  taxPrice: string;
+  totalPrice: string;
+}
+
 // Calculate cart prices
-function calcPrice (items: CartItem[]) {
+function calcPrice (items: CartItem[]): PriceDetails {
   const itemsPrice = round2(
-    items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
-  ) || 0;
+    items.reduce((acc, item) => {
+      const price = item.price ?? 0;
+      const qty = item.qty ?? 0;
+      return acc + Number(price) * qty;
+    }, 0)
+  );
+
   // minium purchase for free shipping $10
   const shippingPrice = round2(itemsPrice > 100 ? 0 : 10);
   const taxPrice = round2(0.15 * itemsPrice);
