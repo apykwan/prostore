@@ -15,8 +15,11 @@ export const signUpDefaultValues = {
 
 export const shippingAddressDefaultValues = {
   fullName: 'John Doe',
-  streetAddress: '123 Main St.',
-  city: 'Anytown',
+  streetAddress: '123 Main St',
+  city: 'La Sierra',
   postalCode: '12345',
-  country: 'USA'
+  country: 'UAA'
 }
+
+export const PAYMENT_METHODS = process.env.PAYMENT_METHODS ? process.env.PAYMENT_METHODS.split(', ') : ['PayPal', 'Stripe', 'CashOnDelivery'];
+export const DEFAULT_PAYMENT_METHOD = process.env.DEFAULT_METHOD || 'PayPal';
