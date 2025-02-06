@@ -19,7 +19,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 import { addItemToCart, removeItemFromCart } from '@/lib/actions/cart.actions';
 import { formatCurrency } from '@/lib/utils';
-import { Cart, CartItem } from '@/types';
+import { Cart } from '@/types';
 
 export default function CartTable ({ cart }: { cart?: Cart }) {
   const router = useRouter();
