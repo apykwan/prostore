@@ -1,10 +1,10 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import { hashSync } from 'bcrypt-ts-edge';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { z } from 'zod';
 
+import { getMyCart } from './cart.actions';
 import { auth } from '@/auth';
 import { prisma } from '@/db/prisma';
 import { shippingAddressSchema } from '@/lib/validators';
@@ -32,16 +32,8 @@ export async function signInWithCredentials(prevState: unknown, formData: FormDa
 
 // Sign user out
 export async function signOutUser() {
-  // const cookiesObject = await cookies();
-  // const sessionCartId = cookiesObject.get('sessionCartId')?.value;
-
-  // if (sessionCartId) {
-  //   await prisma.cart.deleteMany({
-  //     where: { sessionCartId },
-  //   });
-
-  //   cookiesObject.delete('sessionCartId');
-  // }
+  const currentCart = await getMyCart();
+  await prisma.cart.delete({ where: { id: currentCart?.id } });
   await signOut();
 }
 
