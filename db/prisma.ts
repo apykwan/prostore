@@ -30,8 +30,7 @@ export const prisma = new PrismaClient({ adapter }).$extends({
     },
     cart: {
       itemsPrice: {
-        // Declares that 'itemsPrice' is required
-        needs: { itemsPrice: true }, 
+        needs: { itemsPrice: true },
         compute(cart) {
           return cart.itemsPrice.toString();
         },
@@ -53,7 +52,7 @@ export const prisma = new PrismaClient({ adapter }).$extends({
         compute(cart) {
           return cart.totalPrice.toString();
         },
-      }
+      },
     },
     order: {
       itemsPrice: {
@@ -88,6 +87,5 @@ export const prisma = new PrismaClient({ adapter }).$extends({
         },
       },
     },
-
   },
 });
