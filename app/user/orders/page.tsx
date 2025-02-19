@@ -23,8 +23,7 @@ export default async function OrderPage (
   const { page } = await searchParams;
 
   const orders = await getMyOrders({
-    page: Number(page) || 1,
-    limit: 1
+    page: Number(page) || 1
   });
 
   return (
