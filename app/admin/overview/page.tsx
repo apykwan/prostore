@@ -13,6 +13,7 @@ import {
 
 import Charts from './charts';
 import { auth } from '@/auth';
+import { requireAdmin } from '@/lib/auth-guard';
 import { getOrderSummary } from '@/lib/actions/order.actions';
 import { formatCurrency, formatDateTime, formatNumber } from '@/lib/utils';
 
@@ -21,6 +22,8 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminOverviewPage() {
+  await requireAdmin();
+  
   const session = await auth();
 
   if (session?.user?.role !== 'admin') throw new Error('User is not authorized');

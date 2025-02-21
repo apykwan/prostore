@@ -1,5 +1,6 @@
 'use server';
 
+import { redirect } from 'next/navigation';
 import { hashSync } from 'bcrypt-ts-edge';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { z } from 'zod';
@@ -39,6 +40,7 @@ export async function signOutUser() {
   }
 
   await signOut();
+  redirect('/');
 }
 
 // Sign up user
