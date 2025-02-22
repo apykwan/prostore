@@ -10,10 +10,11 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 
+import DeleteDialog from '@/components/shared/delete-dialog';
 import Pagination from '@/components/shared/pagination';
 import { auth } from '@/auth';
 import { requireAdmin } from '@/lib/auth-guard';
-import { getAllOrders } from '@/lib/actions/order.actions';
+import { getAllOrders, deleteOrder } from '@/lib/actions/order.actions';
 import { formatCurrency, formatDateTime, formatId } from '@/lib/utils';
 
 export const metadata: Metadata = {
@@ -69,7 +70,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
                       Details
                     </Link>
                   </Button>
-                  
+                  <DeleteDialog id={order.id} action={deleteOrder} />
                 </TableCell>
               </TableRow>
             ))}
