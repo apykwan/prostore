@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { UTApi } from "uploadthing/server";
 
 import { prisma } from '@/db/prisma';
 import { convertToPlainObject, formatError } from '@/lib/utils';
@@ -38,6 +39,7 @@ export async function getAllProducts({
   category?: string;
 }) {
   const data = await prisma.product.findMany({
+    orderBy: { createdAt: 'desc' },
     skip: (page - 1) * limit,
     take: limit
   });
@@ -51,8 +53,12 @@ export async function getAllProducts({
 }
 
 
-export async function getProductById(id: string) {
-  console.log(id);
+export async function getProductById(productId: string) {
+  const data = await prisma.product.findFirst({
+    where: { id: productId }
+  });
+
+  return convertToPlainObject(data);
 }
 
 export async function deleteProduct(id: string) {
@@ -62,6 +68,18 @@ export async function deleteProduct(id: string) {
     });
 
     if (!productExists) throw new Error('Product not found');
+
+    // Extract file keys from stored URLs
+    const fileKeys = productExists.images.map(img => img.split('/').pop());
+
+    // Delete all the uploaded images and banner from uploadthing
+    const utapi = new UTApi();
+    if (fileKeys.length > 0) {
+      if (productExists.banner) {
+        fileKeys.push(productExists.banner.split('/').pop());
+      }
+      await utapi.deleteFiles(fileKeys as string[]);
+    }
 
     await prisma.product.delete({ where: { id } });
 
