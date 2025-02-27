@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { hashSync } from 'bcrypt-ts-edge';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { z } from 'zod';
@@ -13,6 +14,7 @@ import { signInFormSchema, signUpFormSchema, paymentMethodSchema } from '../vali
 import { formatError } from '../utils';
 import { signIn, signOut } from '@/auth';
 import { ShippingAddress } from '@/types';
+import { PAGE_SIZE } from '../constants';
 
 // Sign in the user with credentials
 export async function signInWithCredentials(prevState: unknown, formData: FormData) {
@@ -84,7 +86,10 @@ export async function getUserById(userId: string) {
   });
 
   if (!user) throw new Error('User not found');
-  return user;
+  return {
+    ...user,
+    email: user.email ?? ""
+  };
 }
 
 // Update the user's address
@@ -171,5 +176,45 @@ export async function updateProfile(user: { name: string; email: string; }) {
       success: false,
       message: formatError(error)
     }
+  }
+}
+
+// Get all the users
+export async function getAllUsers({
+  limit = PAGE_SIZE,
+  page
+}: {
+  limit?: number;
+  page: number;
+}) {
+  const data = await prisma.user.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+    skip: (page - 1) * limit
+  });
+
+  const dataCount = await prisma.user.count();
+
+  return {
+    data,
+    totalPages: Math.ceil(dataCount / limit)
+  };
+}
+
+export async function deleteUser(id: string) {
+  try {
+    await prisma.user.delete({ where: { id } });
+
+    revalidatePath('/admin/users');
+
+    return {
+      success: true,
+      message: 'User deleted successfully',
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error),
+    };
   }
 }

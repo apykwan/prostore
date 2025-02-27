@@ -2,9 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { UTApi } from "uploadthing/server";
 
 import { prisma } from '@/db/prisma';
+import { getUTApi } from '@/server/uploadthing';
 import { convertToPlainObject, formatError } from '@/lib/utils';
 import { LATEST_PRODUCTS_LIMIT, PAGE_SIZE } from '@/lib/constants';
 import { insertProductSchema, updateProductSchema } from '@/lib/validators';
@@ -52,7 +52,6 @@ export async function getAllProducts({
   };
 }
 
-
 export async function getProductById(productId: string) {
   const data = await prisma.product.findFirst({
     where: { id: productId }
@@ -61,10 +60,12 @@ export async function getProductById(productId: string) {
   return convertToPlainObject(data);
 }
 
+
+
 export async function deleteProduct(id: string) {
   try {
     const productExists = await prisma.product.findFirst({
-      where: { id },
+      where: { id }
     });
 
     if (!productExists) throw new Error('Product not found');
@@ -73,12 +74,13 @@ export async function deleteProduct(id: string) {
     const fileKeys = productExists.images.map(img => img.split('/').pop());
 
     // Delete all the uploaded images and banner from uploadthing
-    const utapi = new UTApi();
     if (fileKeys.length > 0) {
       if (productExists.banner) {
         fileKeys.push(productExists.banner.split('/').pop());
       }
-      await utapi.deleteFiles(fileKeys as string[]);
+
+      const utapiInstance = getUTApi();
+      await utapiInstance.deleteFiles(fileKeys as string[]);
     }
 
     await prisma.product.delete({ where: { id } });

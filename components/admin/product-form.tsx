@@ -102,7 +102,7 @@ export default function ProductForm(
             name='slug'
             render={({ field }) => (
               <FormItem className='w-full'>
-                <FormLabel>Slug</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
                   <div className='relative'>
                     <Input placeholder='Enter slug' {...field} />
