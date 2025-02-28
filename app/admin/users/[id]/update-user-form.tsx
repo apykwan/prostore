@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import { updateUser } from '@/lib/actions/user.actions';
 import { useToast } from '@/hooks/use-toast';
 import { updateUserSchema } from '@/lib/validators';
 import { USER_ROLES } from '@/lib/constants';
@@ -37,8 +38,32 @@ export default function UpdateUserForm(
     defaultValues: user
   });
 
-  function onSubmit() {
-    return;
+  async function onSubmit(values: z.infer<typeof updateUserSchema>) {
+    try {
+      const res = await updateUser({
+        ...values,
+        id: user.id
+      });
+
+      if (!res.success) {
+        return toast({
+          variant: 'destructive',
+          description: res.message
+        });
+      }
+
+      toast({
+        description: res.message
+      });
+
+      form.reset();
+      router.push('/admin/users');
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: (error as Error).message
+      });
+    }
   }
   return (
     <Form {...form}>

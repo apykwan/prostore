@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { Prisma } from '@prisma/client';
 import { hashSync } from 'bcrypt-ts-edge';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { z } from 'zod';
@@ -10,7 +11,7 @@ import { getMyCart } from './cart.actions';
 import { auth } from '@/auth';
 import { prisma } from '@/db/prisma';
 import { shippingAddressSchema } from '@/lib/validators';
-import { signInFormSchema, signUpFormSchema, paymentMethodSchema } from '../validators';
+import { signInFormSchema, signUpFormSchema, paymentMethodSchema, updateUserSchema } from '../validators';
 import { formatError } from '../utils';
 import { signIn, signOut } from '@/auth';
 import { ShippingAddress } from '@/types';
@@ -181,13 +182,25 @@ export async function updateProfile(user: { name: string; email: string; }) {
 
 // Get all the users
 export async function getAllUsers({
+  query,
   limit = PAGE_SIZE,
   page
 }: {
+  query?: string;
   limit?: number;
   page: number;
 }) {
+  const queryFilter: Prisma.UserWhereInput = query && query !== 'all' 
+      ? { name: {
+            contains: query,
+            mode: 'insensitive'
+          } as Prisma.StringFilter
+        } 
+      : {};
   const data = await prisma.user.findMany({
+    where: {
+      ...queryFilter
+    },
     orderBy: { createdAt: 'desc' },
     take: limit,
     skip: (page - 1) * limit
@@ -215,6 +228,31 @@ export async function deleteUser(id: string) {
     return {
       success: false,
       message: formatError(error),
+    };
+  }
+}
+
+// Update an user
+export async function updateUser(user: z.infer<typeof updateUserSchema>) {
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        name: user.name,
+        role: user.role
+      }
+    });
+
+    revalidatePath('/admin/users');
+
+    return {
+      success: true,
+      message: 'User updted successfully'
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: formatError(error)
     };
   }
 }

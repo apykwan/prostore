@@ -21,25 +21,39 @@ export const metadata: Metadata = {
   title: 'Admin Orders'
 };
 
-export default async function AdminOrdersPage({ searchParams }: { searchParams: Promise<{ page: string}> }) {
+export default async function AdminOrdersPage(
+  { searchParams }: { searchParams: Promise<{ page: string; query: string; }> }
+) {
   await requireAdmin();
-  const { page = '1' } = await searchParams;
+  const { page = '1', query = '' } = await searchParams;
+  
   const session = await auth();
-
   if (session?.user?.role !== 'admin') throw new Error('User is not autorized');
 
   const orders = await getAllOrders({
-    page: Number(page)
+    page: Number(page),
+    query
   });
   return (
     <div className="space-y-2">
-      <h2 className="h2-bold">Orders</h2>
+      <div className="flex items-center gap-3">
+        <h1 className="h2-bold">Orders</h1>
+        {query && (
+          <div className="text-pink-500 font-extrabold space-x-2">
+            Filtered by <i>&quot;{query}&quot;</i>{ ' ' }
+            <Link href="/admin/orders">
+              <Button variant="outline" size="sm">Remove Filter</Button>
+            </Link>
+          </div>
+        )}
+      </div>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>DATE</TableHead>
+              <TableHead>BUYER</TableHead>
               <TableHead>TOTAL</TableHead>
               <TableHead>PAID</TableHead>
               <TableHead>DELIVERED</TableHead>
@@ -53,6 +67,7 @@ export default async function AdminOrdersPage({ searchParams }: { searchParams: 
                 <TableCell>
                   {formatDateTime(order.createdAt).dateTime}
                 </TableCell>
+                <TableCell>{order.user.name}</TableCell>
                 <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
                 <TableCell>
                   {order.isPaid && order.paidAt

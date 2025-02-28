@@ -69,7 +69,7 @@ export function formatId(id: string) {
 }
 
 // Format date and times
-export const formatDateTime = (dateString: Date) => {
+export function formatDateTime (dateString: string | number | Date) {
   const dateTimeOptions: Intl.DateTimeFormatOptions = {
     month: 'short', // abbreviated month name (e.g., 'Oct')
     year: 'numeric', // abbreviated month name (e.g., 'Oct')
@@ -106,7 +106,7 @@ export const formatDateTime = (dateString: Date) => {
     dateOnly: formattedDate,
     timeOnly: formattedTime,
   };
-};
+}
 
 // Form the pagination links
 export function formUrlQuery({

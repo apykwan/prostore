@@ -26,16 +26,16 @@ export default async function AdminUserPage(
 ) {
   await requireAdmin();
 
-  const { page = '1', query: searchText } = await searchParams;
-  const users = await getAllUsers({ page: 1 });
+  const { page = '1', query = '' } = await searchParams;
+  const users = await getAllUsers({ page: 1, query });
 
   return (
     <div className='space-y-2'>
       <div className='flex items-center gap-3'>
         <h1 className='h2-bold'>Users</h1>
-        {searchText && (
+        {query && (
           <div>
-            Filtered by <i>&quot;{searchText}&quot;</i>{' '}
+            Filtered by <i>&quot;{query}&quot;</i>{' '}
             <Link href='/admin/users'>
               <Button variant='outline' size='sm'>
                 Remove Filter
