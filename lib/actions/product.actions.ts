@@ -150,3 +150,11 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
     }
   }
 }
+
+// Get all categories
+export async function getAllCategories() {
+  return await prisma.product.groupBy({
+    by: ['category'],
+    _count: true
+  });
+}

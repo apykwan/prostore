@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import Menu from './menu';
+import CategoryDrawer from './category-drawer';
 import { APP_NAME } from '@/lib/constants';
 
 export default function Header() {
@@ -9,7 +10,8 @@ export default function Header() {
     <header className="w-full border-b">
       <div className="wrapper flex-between">
         <div className="flex-start">
-          <Link href='/' className="flex-start">
+          <CategoryDrawer />
+          <Link href='/' className="flex-start ml-4">
             <Image src='/images/logo.svg' alt={APP_NAME} height={48} width={48} priority={true} />
 
             <span className="hidden lg:block font-bold text-2xl ml-3">
