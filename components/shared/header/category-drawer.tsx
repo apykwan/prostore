@@ -30,7 +30,7 @@ export default async function CategoryDrawer() {
                 <DrawerClose asChild>
                   <Link href={`/search?category=${x.category}`}>
                     <span className="text-lg text-gray-800 font-extrabold">{x.category}</span>
-                    <span className="text-lg text-rose-600">{x._count}</span>
+                    <span className="text-lg text-rose-600">({x._count})</span>
                   </Link>
                 </DrawerClose>
               </Button>

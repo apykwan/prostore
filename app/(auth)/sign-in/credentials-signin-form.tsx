@@ -62,7 +62,7 @@ export default function CredentialsSigninForm() {
 
         <SignInButton pending={pending} />
 
-        { data && !data.success && (
+        {data && !data.success && (
           <div className="text-center text-destructive">{data.message}</div>
         )}
         
