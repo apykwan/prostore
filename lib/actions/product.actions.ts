@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 import { prisma } from '@/db/prisma';
@@ -44,25 +45,46 @@ export async function getAllProducts({
   rating?: string;
   sort?: string;
 }) {
-  const productQuery = {
-    orderBy: { createdAt: "desc" as "asc" | "desc" },
+  // Query filter
+  const queryFilter =
+    query && query !== 'all'
+      ? {
+          name: {
+            contains: query,
+            mode: 'insensitive',
+          } as Prisma.StringFilter
+        }
+      : {};
+
+  // Category filter
+  const categoryFilter = category && category !== 'all' ? { category } : {};
+
+  // Price filter
+  const priceFilter = price && price !== 'all' ? {
+    price: {
+      gte: Number(price.split('-')[0]),
+      lte: Number(price.split('-')[1])
+    }
+  } : {};
+  
+  // Rating filter
+  const ratingFilter = rating && rating !== 'all' ? {
+    rating: {
+      gte: Number(rating)
+    }
+  } : {}
+
+  const data = await prisma.product.findMany({
+    orderBy: { createdAt: "desc" },
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter
+    },
     skip: (page - 1) * limit,
-    take: limit,
-    where: {} 
-  };
-
-  if (query !== 'all') {
-    productQuery.where = {
-      OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { brand: { contains: query, mode: "insensitive" } },
-        { description: { contains: query, mode: "insensitive" } },
-        { category: { contains: query, mode: "insensitive" } }
-      ]
-    };
-  }
-
-  const data = await prisma.product.findMany(productQuery);
+    take: limit
+  });
   const dataCount = await prisma.product.count();
 
   return {
