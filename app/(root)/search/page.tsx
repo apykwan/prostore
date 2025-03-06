@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 import { getAllProducts, getAllCategories } from '@/lib/actions/product.actions';
 import ProductCard from '@/components/shared/product/product-card';
@@ -27,6 +28,37 @@ const prices = [
 ];
 const ratings = [4, 3, 2, 1];
 const sortOrders = ['newest', 'lowest', 'highest', 'rating'];
+
+export async function generateMetadata(
+  { searchParams } : 
+  { searchParams: Promise<{ q: string; category: string; price: string; rating: string }> }
+) {
+  const {
+    q = 'all',
+    category = 'all',
+    price = 'all',
+    rating = 'all',
+  } = await searchParams;
+
+  const isQuerySet = q && q !== 'all' && q.trim() !== '';
+  const isCategorySet = category && category !== 'all' && category.trim() !== '';
+  const isPriceSet = price && price !== 'all' && price.trim() !== '';
+  const isRatingSet = rating && rating !== 'all' && rating.trim() !== '';
+
+  if (isQuerySet || isCategorySet || isPriceSet || isRatingSet) {
+    return {
+      title: `
+      Search ${isQuerySet ? q : ''} 
+      ${isCategorySet ? `: Category ${category}` : ''}
+      ${isPriceSet ? `: Price ${price}` : ''}
+      ${isRatingSet ? `: Rating ${rating}` : ''}`,
+    };
+  } 
+
+  return {
+    title: 'Search Products',
+  };
+}
 
 export default async function SearchPage(
   { searchParams }: { searchParams: Promise<{ 
@@ -135,8 +167,64 @@ export default async function SearchPage(
             ))}
           </ul>
         </div>
+
+        { /* Rating Links */}
+        <div className="text-xl mb-2 mt-8">Customer Ratings</div>
+        <div>
+          <ul className="space-y-1">
+            <li>
+              <Link 
+                href={getFilterUrl({ qr: 'all', r: 'all' })} 
+                className={`${rating === 'all' && 'font-bold'}`}
+              >
+                Any
+              </Link>
+            </li>
+            {ratings.map(r => (
+              <li key={r}>
+                <Link
+                  href={getFilterUrl({ qr: 'all', r: r.toString() })} 
+                  className={`${rating === r.toString() && 'font-bold'}`}
+                >
+                  {`${r} stars & up`}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <div className="md:col-span-4 space-y-4">
+        <div className="flex-between flex-col my-4">
+          <div className="flex items-center">
+            {q !== 'all' && q !== '' && `Query ${q}`}
+            {category !== 'all' && category !== '' && `Category ${category}`}
+            {price !== 'all' && ` Price ${price}`}
+            {rating !== 'all' && ` Rating ${rating} stars & up`}
+            &nbsp;
+            {
+              (q !== 'all' && q !== '') || 
+              (category !== 'all' && category !== '') ||
+              price !== 'all' ||
+              rating !== 'all' ? (
+                <Button variant={'link'} asChild>
+                  <Link href="/search">Clear</Link>
+                </Button>
+              ) : null
+            }
+          </div>
+          <div>
+            Sort by {' '}
+            {sortOrders.map((s) => (
+              <Link 
+                key={s} 
+                className={`mx-2 ${sort == s && 'front-bold'}`} 
+                href={getFilterUrl({ s })}
+              >
+                {s}
+              </Link>
+            ))}
+          </div>
+        </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {products.data.length === 0 && <p className="font-extrabold text-rose-600">No Products found</p>}
           {products.data.map((product) => (
