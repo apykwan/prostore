@@ -3,7 +3,6 @@
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
-import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader, ArrowRight } from 'lucide-react';
@@ -17,6 +16,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 
+import { useToast } from '@/hooks/use-toast';
 import { updateUserPaymentMethod } from '@/lib/actions/user.actions';
 import { paymentMethodSchema } from '@/lib/validators';
 import { DEFAULT_PAYMENT_METHOD, PAYMENT_METHODS } from '@/lib/constants';

@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
+import ReviewList from './review-list';
+import { auth } from '@/auth';
 import AddToCart from '@/components/shared/product/add-to-cart';
 import ProductImages from '@/components/shared/product/product-images';
 import ProductPrice from '@/components/shared/product/product-price';
@@ -13,9 +15,12 @@ export default async function ProductDetailPage(
 ) {
   const { slug } = await params;
 
+  const session = await auth();
+  const userId = session?.user?.id;
+
   const product = await getProductBySlug(slug);
   if (!product) return notFound(); 
-
+  console.log(product.slug);
   const cart = await getMyCart();
 
   const item = {
@@ -79,6 +84,15 @@ export default async function ProductDetailPage(
             </Card>
           </div>
         </div>
+      </section>
+
+      <section className="mt-10">
+        <h2 className="h2-bold">Customer Reviews</h2>
+        <ReviewList 
+          userId={userId || ''}
+          productId={product.id}
+          productSlug={product.slug}
+        />
       </section>
     </>
   );
