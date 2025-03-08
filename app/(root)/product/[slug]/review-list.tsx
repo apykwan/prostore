@@ -10,6 +10,10 @@ export default function ReviewList(
   { userId, productId, productSlug }: { userId: string; productId: string; productSlug: string; }
 ) {
   const [reviews, setReviews] = useState<Review[]>([]);
+
+  function reload() {
+    console.log('Review Submitted');
+  }
   return (
     <div className="space-y-4">
       {reviews.length === 0 && <div>No reviews yet</div>}
@@ -18,6 +22,7 @@ export default function ReviewList(
           <ReviewForm 
             userId={userId}
             productId={productId}
+            onReviewSubmitted={reload}
           />
         ) : (
           <div>
