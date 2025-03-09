@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
 import ReviewList from './review-list';
+import Rating from '@/components/shared/product/rating';
 import { auth } from '@/auth';
 import AddToCart from '@/components/shared/product/add-to-cart';
 import ProductImages from '@/components/shared/product/product-images';
@@ -20,7 +21,7 @@ export default async function ProductDetailPage(
 
   const product = await getProductBySlug(slug);
   if (!product) return notFound(); 
-  console.log(product.slug);
+
   const cart = await getMyCart();
 
   const item = {
@@ -43,7 +44,8 @@ export default async function ProductDetailPage(
             <div className="flex flex-col gap-6">
               <p>{product.brand} {product.category}</p>
               <h1 className="h3-bold">{product.name}</h1>
-              <p>{product.rating} of {product.numReviews} Reviews</p>
+              <Rating value={+product.rating} />
+              <p>{product.numReviews} reviews</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <ProductPrice 
                   value={Number(product.price)} 

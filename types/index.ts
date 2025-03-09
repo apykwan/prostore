@@ -13,6 +13,7 @@ import {
 export type Product = z.infer<typeof insertProductSchema> & {
   id: string;
   rating: string;
+  numReviews: number;
   createdAt: Date;
 }
 
@@ -42,7 +43,7 @@ export type SalesDataType = {
 
 export type Review= z.infer<typeof insertReviewSchema> & {
   id: string;
-  createdAt: string;
+  createdAt: Date;
   user?: {
     name: string;
   };

@@ -19,7 +19,7 @@ type ToasterToast = ToastProps & {
 }
 
 enum ActionTypes {
-  ADD_TOAST= "ADD_TOAST",
+  ADD_TOAST = "ADD_TOAST",
   UPDATE_TOAST = "UPDATE_TOAST",
   DISMISS_TOAST = "DISMISS_TOAST",
   REMOVE_TOAST = "REMOVE_TOAST",
@@ -123,7 +123,7 @@ export const reducer = (state: State, action: Action): State => {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
       }
-      
+
     default:
       return state
   }

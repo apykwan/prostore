@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
+import Rating from '@/components/shared/product/rating';
 import ProductPrice from './product-price';
 import { Product } from '@/types';
 
@@ -19,7 +20,7 @@ export default function ProductCard({ product }: { product: Product; }) {
           <h2 className="text-sm font-medium">{product.name}</h2>
         </Link>
         <div className="flex-between gap-4">
-          <p>{product.rating} Stars</p>
+          <Rating value={+product.rating} />
           {product.stock > 0 ? (
             <ProductPrice value={Number(product.price)} className="text-red-500" />
           ): (
