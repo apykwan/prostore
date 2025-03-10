@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { prisma } from '@/db/prisma';
 import { auth } from '@/auth';
-import { convertToPlainObject, formatError } from '../utils';
+import { formatError } from '../utils';
 import { insertReviewSchema } from '../validators';
 
 // Create &  Update Reviews

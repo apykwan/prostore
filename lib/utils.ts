@@ -108,6 +108,10 @@ export function formatDateTime (dateString: string | number | Date) {
   };
 }
 
+export function dateFormatter(date: Date) {
+  return new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(date);
+}
+
 // Form the pagination links
 export function formUrlQuery({
   params,

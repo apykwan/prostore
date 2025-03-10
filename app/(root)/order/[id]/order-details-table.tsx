@@ -27,7 +27,11 @@ import { formatId, formatDateTime, formatCurrency } from '@/lib/utils';
 import { Order } from '@/types'
 
 export default function OrderDetailsTable(
-  { order, paypalClientId, isAdmin }: { order: Order, paypalClientId: string, isAdmin: boolean }
+  { order, paypalClientId, isAdmin }: { 
+    order: Omit<Order, 'paymentResult'>, 
+    paypalClientId: string, 
+    isAdmin: boolean 
+  }
 ) {
   const {
     id,
