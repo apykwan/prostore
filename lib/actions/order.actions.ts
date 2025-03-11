@@ -5,12 +5,13 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/db/prisma';
+import { sendPurchaseReceipt } from '@/email';
 import { getUserById } from './user.actions';
 import { getMyCart } from './cart.actions';
 import { auth } from '@/auth';
 import { insertOrderSchema } from '../validators';
 import { formatError, convertToPlainObject } from '../utils';
-import { CartItem, PaymentResult, SalesDataType } from '@/types';
+import { CartItem, PaymentResult, SalesDataType, ShippingAddress } from '@/types';
 import { paypal } from '../paypal';
 import { PAGE_SIZE } from '../constants';
 
@@ -271,6 +272,14 @@ async function updateOrderToPaid(
   });
 
   if (!updatedOrder) throw new Error('Order not found');
+
+  sendPurchaseReceipt({
+    order: {
+      ...updatedOrder,
+      shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
+      paymentResult: updatedOrder.paymentResult as PaymentResult
+    }
+  });
 }
 
 // Get user's order
