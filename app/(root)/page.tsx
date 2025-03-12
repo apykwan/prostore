@@ -2,6 +2,7 @@ import ProductCarousel from '@/components/shared/product/product-carousel';
 import ProductList from '@/components/shared/product/product-list';
 import ViewAllProductsButton from '@/components/view-all-products-button';
 import IconBoxes from '@/components/icon-boxes';
+import DealCountdown from '@/components/deal-countdown';
 import { getLatestProducts, getFeaturedProducts } from '@/lib/actions/product.actions';
 import { LATEST_PRODUCTS_LIMIT } from '@/lib/constants';
 
@@ -19,6 +20,7 @@ export default async function Homepage() {
         limit={LATEST_PRODUCTS_LIMIT} 
       />
       <ViewAllProductsButton />
+      <DealCountdown />
       <IconBoxes />
     </>
   );
