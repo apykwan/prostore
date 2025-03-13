@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
+
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import { type NextAuthConfig } from 'next-auth';
 import { cookies } from 'next/headers';
 
 import { prisma } from '@/db/prisma';
 import { compare } from '@/lib/encrypt';
+import { authConfig } from './auth.config';
 
 declare module 'next-auth' {
   interface User {
@@ -26,13 +26,13 @@ declare module 'next-auth' {
   }
 }
 
-export const config: NextAuthConfig = {
+export const config = {
   pages: {
     signIn: '/sign-in',
     error: '/sign-in'
   },
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
     maxAge: 365 * 24 * 60 * 60
   },
   adapter: PrismaAdapter(prisma),
@@ -55,7 +55,7 @@ export const config: NextAuthConfig = {
         // check if user exists and if the password matches
         if (user && user.password) {
           const isMatch = await compare(credentials.password as string, user.password);
-
+          console.log('isMatch?', isMatch);
           if (isMatch) return {
             id: user.id,
             name: user.name,
@@ -68,6 +68,8 @@ export const config: NextAuthConfig = {
     })
   ],
   callbacks: {
+    ...authConfig.callbacks,
+
     // eslint-disable-next-line
     async session({ session, user, trigger, token }: any) {
       // Set the user ID rom the token
@@ -131,47 +133,6 @@ export const config: NextAuthConfig = {
       }
 
       return token;
-    },
-    // eslint-disable-next-line
-    authorized({ request, auth }: any) {
-      // Array of regex patterns of paths we want to protect
-      const protectedPaths = [
-        /\/shipping-address/,
-        /\/payment-method/,
-        /\/place-order/,
-        /\/profile/,
-        /\/user\/(.*)/,
-        /\/order\/(.*)/,
-        /\/admin/,
-      ];
-
-      // Get pathname from the req URL object
-      const { pathname } = request.nextUrl;
-
-      // Check if user is not authenticated and accessing a protected path
-      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
-      
-      // Check for session cart cookie
-      if (!request.cookies.get('sessionCartId')) {
-        // Generate new session cart id cookie
-        const sessionCartId = crypto.randomUUID();
-        
-        // Clone the req headers
-        const newRequestHeaders = new Headers(request.headers);
-
-        // Create new response and add the new headers
-        const response = NextResponse.next({
-          request: {
-            headers: newRequestHeaders
-          }
-        });
-
-        // Set newly generated sessionCartId in the response cookies
-        response.cookies.set('sessionCartId', sessionCartId);
-        return response;
-      }
-
-      return true;
     }
   }
 };

@@ -25,7 +25,7 @@ function calcPrice (items: CartItem[]): PriceDetails {
       const qty = item.qty ?? 0;
       return acc + Number(price) * qty;
     }, 0)
-  );
+  )!;
 
   // minium purchase for free shipping $10
   const shippingPrice = round2(itemsPrice > 100 ? 0 : 10);
