@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 
+import StripePayment from './stripe-payment';
 import { useToast } from  '@/hooks/use-toast';
 import { 
   createPayPalOrder, 
@@ -27,10 +28,11 @@ import { formatId, formatDateTime, formatCurrency } from '@/lib/utils';
 import { Order } from '@/types'
 
 export default function OrderDetailsTable(
-  { order, paypalClientId, isAdmin }: { 
-    order: Omit<Order, 'paymentResult'>, 
-    paypalClientId: string, 
-    isAdmin: boolean 
+  { order, paypalClientId, isAdmin, stripeClientSecret }: { 
+    order: Omit<Order, 'paymentResult'>; 
+    paypalClientId: string; 
+    isAdmin: boolean; 
+    stripeClientSecret: string | null;
   }
 ) {
   const {
@@ -47,9 +49,8 @@ export default function OrderDetailsTable(
     paidAt,
     deliveredAt,
   } = order;
-
   const { toast } = useToast();
-
+  
   function PrintLoadingState() {
     const [{ isPending, isRejected }] = usePayPalScriptReducer();
 
@@ -225,6 +226,17 @@ export default function OrderDetailsTable(
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
+
+              {/* Stripe Payment */}
+              {
+                !isPaid && paymentMethod === 'Stripe' && stripeClientSecret && (
+                  <StripePayment 
+                    priceInCents={Number(order.totalPrice)}
+                    orderId={order.id}
+                    clientSecret={stripeClientSecret}
+                  />
+                )
+              }
 
               {/* PayPal Payment*/}
               {!isPaid && paymentMethod === 'PayPal' && (
