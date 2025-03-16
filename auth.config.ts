@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { type NextAuthConfig } from 'next-auth';
 
-console.log("authConfig loaded");
 export const authConfig = {
   pages: {
     signIn: '/sign-in',
