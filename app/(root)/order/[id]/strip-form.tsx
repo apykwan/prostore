@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useElements, useStripe, PaymentElement } from '@stripe/react-stripe-js';
+import { useElements, useStripe, PaymentElement, LinkAuthenticationElement } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 
 import { formatCurrency } from '@/lib/utils';
@@ -18,7 +18,7 @@ export default function StripeForm(
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !email) return;
 
     setIsLoading(true);
     setErrorMessage("");
@@ -48,6 +48,11 @@ export default function StripeForm(
       <div className="text-xl">Stripe Checkout</div>
       {errorMessage && <div className="text-destructive">{errorMessage}</div>}
       <PaymentElement />
+      <div>
+          <LinkAuthenticationElement
+            onChange={(e) => setEmail(e.value.email)}
+          />
+        </div>
       <Button 
         className="w-full" 
         size="lg" 

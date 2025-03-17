@@ -219,11 +219,12 @@ export async function approvePayPalOrder(
 }
 
 // Update order to paid
-async function updateOrderToPaid(
+export async function updateOrderToPaid(
   { orderId, paymentResult }: 
   { orderId: string, paymentResult?: PaymentResult }
 ) {
-  // Get order from database
+ try {
+   // Get order from database
   const order = await prisma.order.findFirst({
     where: {
       id: orderId
@@ -280,6 +281,10 @@ async function updateOrderToPaid(
       paymentResult: updatedOrder.paymentResult as PaymentResult
     }
   });
+ } catch (err) {
+    console.error('Error updating order:', err);
+    throw new Error('Failed to update order.');
+ }
 }
 
 // Get user's order
